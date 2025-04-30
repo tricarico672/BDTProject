@@ -1,6 +1,3 @@
-# Use postgres/example user/password credentials
-version: "3.9"
-
 services:
   db:
     build:
@@ -15,11 +12,36 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
+      # sets password
       POSTGRES_PASSWORD: example
+      # declares name of the database
       POSTGRES_DB: raw_data
+      # declares port-binding from port 5432 in the container
+      # to 5432 on the host system
+    ports:
+      - 5432:5432
 
   adminer:
+    # used to create the graphical access interface to the database
     image: adminer
     restart: always
+    # makes it possible to access it from localhost:8080 port from browser
     ports:
       - 8080:8080
+
+  python_sql_test:
+    # test service to query data
+    build:
+      context: ./query_data
+
+  ipython:
+    # interactive service to make SQL queries
+    build: ./ipython-client
+    # clearly signals the dependency to db
+    depends_on:
+      - db
+    # working_dir: /app
+    # sets a name for the command executable in the terminal
+    command: ipython
+    tty: true
+    stdin_open: true
