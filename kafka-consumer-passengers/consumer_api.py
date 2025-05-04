@@ -1,11 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from kafka import KafkaConsumer
 import threading
 import json
-from collections import deque
+from collections import deque, defaultdict
 import time
+from datetime import datetime, timedelta
 
 app = FastAPI()
+
+def parse_time(ts):
+    # Adjust based on your data format
+    if isinstance(ts, str):
+        return datetime.fromisoformat(ts)
+    return datetime.fromtimestamp(ts)
 
 # FIFO memory buffer to store the last N messages
 MAX_MESSAGES = 100
@@ -50,3 +57,28 @@ def latest_message():
 @app.get("/stream")
 def all_messages():
     return list(message_store)
+
+@app.get("/filter-by-route")
+def filter_by_route(route: str = Query(..., description="Route to filter messages by")):
+    filtered = [msg for msg in message_store if msg.get("route") == route]
+    return filtered if filtered else {"message": f"No data found for route '{route}'"}
+
+@app.get("/filter-by-time-range")
+def filter_by_time_range(
+    start_time: str = Query(..., description="Start time in ISO 8601 format (e.g. '2025-05-04T10:00:00Z')"),
+    end_time: str = Query(..., description="End time in ISO 8601 format (e.g. '2025-05-04T12:00:00Z')")
+):
+    try:
+        # Parse the start and end time
+        start_dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
+        end_dt = datetime.fromisoformat(end_time.replace("Z", "+00:00"))
+    except ValueError:
+        return {"error": "Invalid date format. Use ISO 8601 format (e.g., '2025-05-04T10:00:00Z')"}
+    
+    # Filter messages within the time range
+    filtered_msgs = [
+        msg for msg in message_store
+        if "timestamp" in msg and parse_time(msg["timestamp"]) >= start_dt and parse_time(msg["timestamp"]) <= end_dt
+    ]
+    
+    return filtered_msgs if filtered_msgs else {"message": f"No data in the range {start_time} to {end_time}"}
