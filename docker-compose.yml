@@ -76,3 +76,15 @@ services:
       - kafka-consumer-passengers
     ports:
       - 8001:8001
+
+  kafka-producer-sensors:
+    build: ./kafka-producer-sensors
+    depends_on:
+      - kafka
+  kafka-consumer-sensors:
+    build: ./kafka-consumer-sensors
+    depends_on:
+      - kafka
+      - kafka-consumer-passengers
+    ports:
+      - 8002:8002
