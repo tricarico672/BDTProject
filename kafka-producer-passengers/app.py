@@ -83,6 +83,7 @@ with open("route_to_stops.json", "r") as f:
 def main():
     for route in route_stop_map:
         for stop in route_stop_map[route]['stops']:
+            # already takes into account time but should only make predictions for specific timestamps at each point (?)
             get_passengers(stop, route)
 
 if __name__ == "__main__":
