@@ -6,7 +6,6 @@ COPY app.py .
 COPY treemodel.pkl .
 COPY treemodel_out.pkl .
 COPY labelencoder.pkl .
-COPY route_to_stops.json .
 COPY stop_times_passengers_shapes.csv .
 
 RUN pip install pandas numpy kafka-python scikit-learn
