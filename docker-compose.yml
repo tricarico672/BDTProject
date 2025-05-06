@@ -6,14 +6,7 @@ services:
       context: ./postgresql
     # originally set to "always" so that everytime the docker daemon is restarted this is rerun automatically and the container starts automatically
     restart: no
-    # set shared memory limit when using docker-compose
     shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       # sets password
       POSTGRES_PASSWORD: example
@@ -99,10 +92,8 @@ services:
       - 8002:8002
 
   mongodb-sensors:
-    build: ./mong/sensors
+    build: ./mong
     depends_on:
       - kafka-consumer-sensors
     ports:
       - 8003:8003
-# volumes:
-#   mongo_data:
