@@ -4,8 +4,8 @@ In this directory there is the main configuration to run MongoDB, including diff
 
 # Current implementation
 
-The current implementation is able to connect to the streaming of data of the sensors API and pushes data into the MongoDB `raw` database. At this point in time, deduplication is also handled at this step by checking whether the `measurement_id` from sensors or the `ticket_id` from tickets are already available in MongoDB and avoiding reinsertion in that case.
-In the newer version, inserts are performed directly from the generator without the need to make calls to exposed APIs.
+The current implementation subscribes to Kafka topics from the tickets, passengers, and sensors API and pushes data into the MongoDB `raw` database based on the specific topic it is listening to.
+In the newer version, inserts are performed directly from the generator without the need to make calls to exposed APIs. Data is then inserted in the `passengers`, `tickets`, and `sensors` collections.
 
 # Example: Accessing and Querying MongoDB
 
@@ -40,3 +40,9 @@ db.sensors.find()
 ```
 db.sensors.find().sort({ "_id": -1 }).limit(1)
 ```
+
+# History of development
+
+Previous versions of this used the following approach:
+
+- At this point in time, deduplication is also handled at this step by checking whether the `measurement_id` from sensors or the `ticket_id` from tickets are already available in MongoDB and avoiding reinsertion in that case.

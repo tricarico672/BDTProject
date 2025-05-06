@@ -44,6 +44,12 @@ CREATE TABLE IF NOT EXISTS stops (
 	wheelchair_boarding SMALLINT
 );
 
+CREATE TABLE IF NOT EXISTS bus (
+	bus_id SERIAL,
+	total_capacity SMALLINT,
+	seats SMALLINT
+);
+
 COPY trips (route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,wheelchair_accessible)
 FROM '/docker-entrypoint-initdb.d/trentino_trasporti/trips.txt'
 -- FROM '/data/trentino_trasporti/trips.txt'
@@ -71,5 +77,10 @@ CSV HEADER;
 COPY stop_times (trip_id,arrival_time,departure_time,stop_id,stop_sequence)
 FROM '/docker-entrypoint-initdb.d/trentino_trasporti/stop_times_cleaned.txt'
 -- FROM '/data/trentino_trasporti/stop_times.txt'
+DELIMITER ','
+CSV HEADER;
+
+COPY bus (bus_id,total_capacity,seats)
+FROM '/docker-entrypoint-initdb.d/trentino_trasporti/buses.csv'
 DELIMITER ','
 CSV HEADER;

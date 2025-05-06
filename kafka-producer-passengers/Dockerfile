@@ -8,6 +8,6 @@ COPY treemodel_out.pkl .
 COPY labelencoder.pkl .
 COPY stop_times_passengers_shapes.csv .
 
-RUN pip install pandas numpy kafka-python scikit-learn
+RUN pip install pandas numpy kafka-python scikit-learn sqlalchemy psycopg2-binary
 
 CMD ["python", "app.py"]

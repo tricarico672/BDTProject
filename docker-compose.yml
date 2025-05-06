@@ -56,6 +56,9 @@ services:
     build: ./kafka-producer-passengers
     depends_on:
       - kafka
+      - db
+    environment:
+      - SLEEP=0.5
 
   kafka-consumer-passengers:
     build: ./kafka-consumer-passengers
@@ -69,6 +72,8 @@ services:
     build: ./kafka-producer-tickets
     depends_on:
       - kafka
+    environment:
+      - SLEEP=0.5
 
   kafka-consumer-tickets:
     build: ./kafka-consumer-tickets
@@ -82,6 +87,8 @@ services:
     build: ./kafka-producer-sensors
     depends_on:
       - kafka
+    environment:
+      - SLEEP=0.5
 
   kafka-consumer-sensors:
     build: ./kafka-consumer-sensors
@@ -91,7 +98,7 @@ services:
     ports:
       - 8002:8002
 
-  mongodb-sensors:
+  mongodb-save:
     build: ./mong
     depends_on:
       - kafka-consumer-sensors

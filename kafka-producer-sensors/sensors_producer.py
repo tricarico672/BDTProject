@@ -3,6 +3,9 @@ import random
 import json
 import time
 from kafka import KafkaProducer
+import os
+
+SLEEP = os.getenv("SLEEP")
 
 def create_kafka_producer():
     producer = None
@@ -23,23 +26,25 @@ producer = create_kafka_producer()
 def poll_stream_and_generate_sensors():
     while True:
         try:
-            # Call your Kafka-exposed API
+            # Call Kafka-exposed API
             response = requests.get("http://kafka-consumer-passengers:8000/stream")
             if response.status_code == 200:
                 messages = response.json()
 
                 for msg in messages:
-                    predicted_in = msg.get('predicted_passengers_out', 0)
+                    predicted_out = msg.get('predicted_passengers_out', 0)
 
-                    for i in range(predicted_in):
-                        ticket = generate_sensors(msg)
-                        print("Sending ticket:", ticket)
-                        producer.send("sensors.topic", value=ticket)
+                    for i in range(predicted_out):
+                        sensor = generate_sensors(msg)
+                        print("Sending sensor:", sensor)
+                        producer.send("sensors.topic", value=sensor)
 
         except Exception as e:
             print("Error:", e)
 
-        time.sleep(0.5)
+        time.sleep(float(SLEEP))
+
+
 
 def generate_sensors(msg):
     measurement_id = f"{msg['stop_id']}-{msg['route']}-{msg['timestamp']}-{random.randint(1000, 9999)}"
@@ -50,7 +55,10 @@ def generate_sensors(msg):
         "stop_id": msg['stop_id'],
         "route": msg['route'],
         # hard-coded since the assumption is that 
-        "status": "active"
+        "status": 1,
+        "activation_type": 2,
+        "bus_id": msg['bus_id'],
+        "trip_id": msg['trip_id']
     }
 
 if __name__ == "__main__":

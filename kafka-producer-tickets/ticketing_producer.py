@@ -3,6 +3,9 @@ import random
 import json
 import time
 from kafka import KafkaProducer
+import os
+
+SLEEP = os.getenv("SLEEP")
 
 def create_kafka_producer():
     producer = None
@@ -39,7 +42,7 @@ def poll_stream_and_generate_tickets():
         except Exception as e:
             print("Error:", e)
 
-        time.sleep(0.5)
+        time.sleep(float(SLEEP))
 
 def generate_ticket(msg):
     ticket_id = f"{msg['stop_id']}-{msg['route']}-{msg['timestamp']}-{random.randint(1000, 9999)}"
@@ -56,7 +59,9 @@ def generate_ticket(msg):
         "stop_id": msg['stop_id'],
         "route": msg['route'],
         "passenger_type": passenger_type,
-        "fare": fare
+        "fare": fare,
+        "bus_id": msg['bus_id'],
+        "trip_id": msg['trip_id']
     }
 
 if __name__ == "__main__":
