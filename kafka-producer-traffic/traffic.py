@@ -6,9 +6,14 @@ from kafka import KafkaProducer
 import os
 from sqlalchemy import create_engine, text
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 SLEEP = float(os.getenv("SLEEP", "1"))
 print("SLEEP is set to:", SLEEP, flush=True)
+# read API KEY from .env file
+GOOGLE_API_KEY = str(os.getenv("GOOGLE_API_KEY", None))
 
 # Connection settings
 db_user = 'postgres'
@@ -80,7 +85,7 @@ producer = create_kafka_producer()
 all_coordinates = []
 tried_shapes = []
 
-def get_traffic_data(key: str = 'AIzaSyCxk2RwQfWXcnOtqI1SUYotbHj6zawGlE4'):
+def get_traffic_data(key: str = GOOGLE_API_KEY):
     global all_coordinates
     global engine
     tried_shapes = []
