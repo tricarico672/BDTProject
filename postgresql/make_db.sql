@@ -50,6 +50,15 @@ CREATE TABLE IF NOT EXISTS bus (
 	seats SMALLINT
 );
 
+CREATE TABLE IF NOT EXISTS events (
+	event_id SERIAL,
+	event_name VARCHAR(120),
+	day_event DATE,
+	start_time TIME,
+	end_time TIME,
+	location_event VARCHAR(120) 
+);
+
 COPY trips (route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,wheelchair_accessible)
 FROM '/docker-entrypoint-initdb.d/trentino_trasporti/trips.txt'
 -- FROM '/data/trentino_trasporti/trips.txt'
@@ -82,5 +91,10 @@ CSV HEADER;
 
 COPY bus (bus_id,total_capacity,seats)
 FROM '/docker-entrypoint-initdb.d/trentino_trasporti/buses.csv'
+DELIMITER ','
+CSV HEADER;
+
+COPY events (event_id,event_name,day_event,start_time,end_time,location_event)
+FROM '/docker-entrypoint-initdb.d/trentino_trasporti/events.csv'
 DELIMITER ','
 CSV HEADER;
